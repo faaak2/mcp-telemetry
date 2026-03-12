@@ -7,7 +7,7 @@ An MCP server that wraps the [TelemetryDeck](https://telemetrydeck.com) analytic
 ### Claude Code
 
 ```bash
-claude mcp add telemetrydeck --transport http https://mcp-builder.de/telemetry
+claude mcp add telemetrydeck --transport http https://mcp-builder.de/telemetry/mcp
 ```
 
 ### Claude Desktop
