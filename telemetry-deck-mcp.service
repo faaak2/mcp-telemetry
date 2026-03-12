@@ -1,0 +1,14 @@
+[Unit]
+Description=TelemetryDeck MCP Server
+After=network.target
+
+[Service]
+Type=simple
+User=seka
+WorkingDirectory=/home/seka/MCP/telemetry
+ExecStart=/home/seka/.local/bin/uv run telemetry-deck-mcp
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

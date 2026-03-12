@@ -1,0 +1,16 @@
+[project]
+name = "telemetry-deck-mcp"
+version = "0.1.0"
+description = "MCP server for TelemetryDeck analytics API"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp[cli]",
+    "httpx",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+telemetry-deck-mcp = "telemetry_deck_mcp.server:main"
