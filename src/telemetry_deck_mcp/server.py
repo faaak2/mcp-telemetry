@@ -1,12 +1,17 @@
 import json
 import httpx
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from telemetry_deck_mcp.client import TelemetryDeckClient
 
 mcp = FastMCP(
     "TelemetryDeck",
-    host="0.0.0.0",
+    host="127.0.0.1",
     port=8083,
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=["127.0.0.1:*", "localhost:*", "[::1]:*", "mcp-builder.de"],
+    ),
     instructions=(
         "This server provides access to TelemetryDeck analytics via TQL "
         "(TelemetryDeck Query Language). Before constructing your first TQL query "
