@@ -2,7 +2,7 @@ import json
 import httpx
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
-from telemetry_deck_mcp.client import TelemetryDeckClient
+from telemetry_deck_mcp.client import TelemetryDeckClient, login as client_login
 
 mcp = FastMCP(
     "TelemetryDeck",
@@ -45,6 +45,31 @@ TQL_DOCS = {
     "valueFormatter": "https://telemetrydeck.com/docs/tql/valueFormatter/",
     "queryContext": "https://telemetrydeck.com/docs/tql/queryContext/",
 }
+
+
+@mcp.tool()
+async def login(email: str, password: str) -> str:
+    """Log in to TelemetryDeck and retrieve a bearer token.
+
+    Use this tool first to authenticate before calling run_query or get_insight_query.
+    The returned bearer token can be used for all subsequent API calls.
+
+    Args:
+        email: Your TelemetryDeck account email.
+        password: Your TelemetryDeck account password.
+    """
+    try:
+        result = await client_login(email, password)
+        token = result.get("value", "")
+        expires = result.get("expiresAt", "unknown")
+        return (
+            f"Login successful!\n\n"
+            f"Bearer token: {token}\n"
+            f"Expires at: {expires}\n\n"
+            f"Use this token as the bearer_token parameter in run_query and get_insight_query."
+        )
+    except Exception as e:
+        return f"Error: {e}"
 
 
 @mcp.tool()

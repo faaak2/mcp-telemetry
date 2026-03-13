@@ -1,7 +1,26 @@
 import asyncio
+import base64
+
 import httpx
 
 BASE_URL = "https://api.telemetrydeck.com"
+
+
+async def login(email: str, password: str) -> dict:
+    """Authenticate with TelemetryDeck and return session info including bearer token."""
+    credentials = base64.b64encode(f"{email}:{password}".encode()).decode()
+    async with httpx.AsyncClient(base_url=BASE_URL, timeout=15) as client:
+        resp = await client.post(
+            "/api/v3/users/login",
+            headers={
+                "Authorization": f"Basic {credentials}",
+                "Content-Length": "0",
+            },
+        )
+        if resp.status_code == 401:
+            raise RuntimeError("Login failed (401). Check your email and password.")
+        resp.raise_for_status()
+        return resp.json()
 
 
 class TelemetryDeckClient:
