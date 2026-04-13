@@ -93,7 +93,10 @@ async def get_insight_query(
 
 
 def main():
-    mcp.run(transport="streamable-http")
+    import sys
+
+    transport = "stdio" if "--stdio" in sys.argv else "streamable-http"
+    mcp.run(transport=transport)
 
 
 if __name__ == "__main__":
