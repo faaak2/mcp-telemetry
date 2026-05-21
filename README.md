@@ -27,19 +27,27 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 
 ### Install the bundled skill (optional)
 
-This repo ships a Claude Code skill at `skills/telemetrydeck/` that wraps the MCP tools with a guided workflow for teammates: it handles install, login (email/password or Google-auth via Chrome), and writes TQL queries from natural-language questions.
+This repo ships a Claude Code skill at `skills/telemetrydeck/SKILL.md` that wraps the MCP tools with a guided workflow: it offers to auto-install the TelemetryDeck MCP (and chrome-devtools MCP, if Google sign-in is needed), drives the login, and writes TQL queries from natural-language questions.
 
-Copy it into your local skills directory:
+The skill is one self-contained file. To install it on your machine, fetch it directly:
+
+```powershell
+# Windows (PowerShell)
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\telemetrydeck" | Out-Null
+Invoke-WebRequest -OutFile "$env:USERPROFILE\.claude\skills\telemetrydeck\SKILL.md" `
+  https://raw.githubusercontent.com/faaak2/mcp-telemetry/main/skills/telemetrydeck/SKILL.md
+```
 
 ```bash
 # macOS / Linux
-cp -r skills/telemetrydeck ~/.claude/skills/
-
-# Windows (PowerShell)
-Copy-Item -Recurse skills/telemetrydeck $env:USERPROFILE\.claude\skills\
+mkdir -p ~/.claude/skills/telemetrydeck
+curl -o ~/.claude/skills/telemetrydeck/SKILL.md \
+  https://raw.githubusercontent.com/faaak2/mcp-telemetry/main/skills/telemetrydeck/SKILL.md
 ```
 
-After restart, ask Claude things like "show me yesterday's signups on Web Player" or "DAU on iOS this week" and the skill triggers.
+Or if you have the repo cloned: `cp skills/telemetrydeck/SKILL.md ~/.claude/skills/telemetrydeck/SKILL.md`.
+
+Restart Claude Code, then ask things like "show me yesterday's signups on Web Player" or "DAU on iOS this week" — the skill triggers and walks the rest of the setup.
 
 ## Running the Server
 
