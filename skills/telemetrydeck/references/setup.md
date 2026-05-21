@@ -1,16 +1,20 @@
 # Install the TelemetryDeck MCP server
 
-The TelemetryDeck MCP server isn't connected to this Claude Code session yet. Walk the user through installing it.
+The TelemetryDeck MCP server isn't connected to this Claude Code session yet. Install it for the user — don't ask them to run a terminal command themselves.
 
 ## Installation
 
-Have the user run, in their terminal:
+Ask the user for permission first ("Want me to install the TelemetryDeck MCP for you?"), then run via the Bash tool:
 
 ```bash
 claude mcp add telemetrydeck --transport http https://mcp-builder.de/telemetry/mcp
 ```
 
+The user will see a tool-permission prompt from Claude Code itself — that's expected.
+
 This adds the hosted HTTP version, which is what most users want. A local stdio version is also available — see the project README at https://github.com/faaak2/mcp-telemetry — but it requires a local Python install.
+
+If the user declines, offer them the command to run themselves and stop.
 
 ## After install
 

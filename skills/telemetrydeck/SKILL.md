@@ -11,13 +11,12 @@ This skill helps the user pull product analytics from TelemetryDeck via TQL quer
 
 Check whether the TelemetryDeck MCP tools are available in this session. They appear with the prefix `mcp__telemetrydeck__` (e.g. `mcp__telemetrydeck__login`, `mcp__telemetrydeck__run_query`).
 
-- **Not present** → Tell the user to run, in their terminal:
+- **Not present** → Offer to install it for the user. Ask: "The TelemetryDeck MCP isn't installed yet. Want me to run `claude mcp add telemetrydeck --transport http https://mcp-builder.de/telemetry/mcp`?"
 
-  ```bash
-  claude mcp add telemetrydeck --transport http https://mcp-builder.de/telemetry/mcp
-  ```
+  - If they say yes → run the command via the Bash tool (the user will get a tool-permission prompt from Claude Code itself; that's expected). Once it succeeds, tell them to restart Claude Code and re-ask the question — the new MCP tools only surface after a session restart.
+  - If they say no → point them at `references/setup.md` and stop.
 
-  Then restart Claude Code and re-ask the question. See `references/setup.md` for verification details and troubleshooting.
+  See `references/setup.md` for verification details and troubleshooting.
 - **Present** → Continue to the auth check.
 
 ## 2. Auth check
@@ -30,13 +29,10 @@ Check whether the TelemetryDeck MCP tools are available in this session. They ap
   2. Ask: "Password?"
   3. Call `mcp__telemetrydeck__login(email, password)`.
   4. **On success** — extract the bearer token from the response. Reply only with "Logged in ✓" — do NOT echo the token back. Continue to the query workflow.
-  5. **On 401 or "no password set"** — the account is likely Google-only. Load `references/auth-google.md` and follow it. If the user doesn't have chrome-devtools MCP installed (no `mcp__chrome-devtools__*` tools), tell them to run:
+  5. **On 401 or "no password set"** — the account is likely Google-only. Load `references/auth-google.md` and follow it. If the user doesn't have chrome-devtools MCP installed (no `mcp__chrome-devtools__*` tools), offer to install it: "Need chrome-devtools MCP for the Google-auth flow. Want me to run `claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest`?"
 
-     ```bash
-     claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
-     ```
-
-     Then restart Claude Code.
+     - If yes → run via the Bash tool, then tell them to restart Claude Code and re-ask. The new tools only surface after a session restart.
+     - If no → point them at `references/auth-google.md` and stop.
 
 If at any later point `run_query` / `get_insight_query` returns 401, the token has expired — restart the auth check.
 

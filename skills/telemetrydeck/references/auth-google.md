@@ -6,13 +6,15 @@ Use this flow when `mcp__telemetrydeck__login(email, password)` returned 401 or 
 
 Look for tools with the prefix `mcp__chrome-devtools__` (e.g. `mcp__chrome-devtools__new_page`).
 
-- **Not present** → tell the user to run, in their terminal:
+- **Not present** → install it for the user. Ask permission first ("Want me to install chrome-devtools MCP for you?"), then run via the Bash tool:
 
   ```bash
   claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
   ```
 
-  Then restart Claude Code and re-ask the original question. The skill will fire again.
+  The user will see a tool-permission prompt from Claude Code itself — that's expected. Once it succeeds, tell them to restart Claude Code and re-ask the original question. The skill will fire again.
+
+  If the user declines, offer them the command to run themselves and stop.
 
 - **Present** → continue.
 
