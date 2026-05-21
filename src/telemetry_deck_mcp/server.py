@@ -29,7 +29,6 @@ def _load_app_structure(app_id: str) -> dict:
     raise ValueError(f"App with id {app_id!r} not found")
 
 
-_TQL_GUIDE = _load_tql_guide()  # used below in `instructions=`; removed in Task 5
 
 mcp = FastMCP(
     "TelemetryDeck",
@@ -40,9 +39,13 @@ mcp = FastMCP(
         allowed_hosts=["127.0.0.1:*", "localhost:*", "[::1]:*", "mcp-builder.de"],
     ),
     instructions=(
-        "This server provides access to TelemetryDeck analytics via TQL "
-        "(TelemetryDeck Query Language). You MUST read and follow the TQL guide "
-        "below before constructing any query.\n\n" + _TQL_GUIDE
+        "TelemetryDeck analytics via TQL (TelemetryDeck Query Language). "
+        "Before constructing any query you MUST:\n"
+        "  1. Call `get_tql_guide` for the query language reference.\n"
+        "  2. Call `list_apps` to discover available apps and pick the right `app_id`.\n"
+        "  3. Call `get_app_structure(app_id)` for the event/parameter list of that app.\n"
+        "Then compose your TQL and call `run_query`. If `run_query` returns 401, "
+        "the bearer token is expired — re-authenticate."
     ),
 )
 
