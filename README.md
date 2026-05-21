@@ -25,6 +25,22 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 }
 ```
 
+### Install the bundled skill (optional)
+
+This repo ships a Claude Code skill at `skills/telemetrydeck/` that wraps the MCP tools with a guided workflow for teammates: it handles install, login (email/password or Google-auth via Chrome), and writes TQL queries from natural-language questions.
+
+Copy it into your local skills directory:
+
+```bash
+# macOS / Linux
+cp -r skills/telemetrydeck ~/.claude/skills/
+
+# Windows (PowerShell)
+Copy-Item -Recurse skills/telemetrydeck $env:USERPROFILE\.claude\skills\
+```
+
+After restart, ask Claude things like "show me yesterday's signups on Web Player" or "DAU on iOS this week" and the skill triggers.
+
 ## Running the Server
 
 ### Prerequisites
@@ -69,6 +85,24 @@ mcp-builder.de {
 ```
 
 ## Tools
+
+### `get_tql_guide`
+
+Return the TQL (TelemetryDeck Query Language) reference. Has no parameters. Call this once per session before constructing queries.
+
+### `list_apps`
+
+List the apps available for querying. Has no parameters. Returns a JSON array of `{appId, appName}` objects, one per `*-StructuralData.json` file bundled in the package.
+
+### `get_app_structure`
+
+Return the StructuralData (events + parameters + description) for a given app.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `app_id` | string | The TelemetryDeck app ID (from `list_apps`) |
 
 ### `run_query`
 
