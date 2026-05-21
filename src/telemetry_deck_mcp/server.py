@@ -9,6 +9,16 @@ def _load_tql_guide() -> str:
     return (Path(__file__).parent / "tql_guide.md").read_text(encoding="utf-8")
 
 
+def _load_apps() -> list[dict]:
+    """Return [{appId, appName}, ...] from bundled StructuralData JSON files."""
+    pkg_dir = Path(__file__).parent
+    apps = []
+    for path in sorted(pkg_dir.glob("*-StructuralData.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        apps.append({"appId": data["appId"], "appName": data["appName"]})
+    return apps
+
+
 _TQL_GUIDE = _load_tql_guide()  # used below in `instructions=`; removed in Task 5
 
 mcp = FastMCP(
@@ -61,6 +71,17 @@ async def get_tql_guide() -> str:
     filters, aggregations, intervals, and granularity.
     """
     return _load_tql_guide()
+
+
+@mcp.tool()
+async def list_apps() -> str:
+    """List the apps available for querying.
+
+    Call this to discover the `app_id` values you can pass to `run_query`,
+    `get_insight_query`, and `get_app_structure`. Returns a JSON array of
+    {appId, appName} objects.
+    """
+    return json.dumps(_load_apps(), indent=2)
 
 
 @mcp.tool()
