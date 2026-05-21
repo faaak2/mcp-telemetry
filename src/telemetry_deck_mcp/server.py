@@ -4,7 +4,12 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from telemetry_deck_mcp.client import TelemetryDeckClient, login as client_login
 
-_TQL_GUIDE = (Path(__file__).parent / "tql_guide.md").read_text()
+
+def _load_tql_guide() -> str:
+    return (Path(__file__).parent / "tql_guide.md").read_text(encoding="utf-8")
+
+
+_TQL_GUIDE = _load_tql_guide()  # used below in `instructions=`; removed in Task 5
 
 mcp = FastMCP(
     "TelemetryDeck",
@@ -46,6 +51,16 @@ async def login(email: str, password: str) -> str:
     except Exception as e:
         return f"Error: {e}"
 
+
+@mcp.tool()
+async def get_tql_guide() -> str:
+    """Return the TQL (TelemetryDeck Query Language) reference guide.
+
+    You MUST call this before constructing any query. The guide covers query
+    types (timeseries, topN, groupBy, funnel, retention, scan, experiment),
+    filters, aggregations, intervals, and granularity.
+    """
+    return _load_tql_guide()
 
 
 @mcp.tool()
