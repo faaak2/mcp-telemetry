@@ -19,6 +19,16 @@ def _load_apps() -> list[dict]:
     return apps
 
 
+def _load_app_structure(app_id: str) -> dict:
+    """Return the full parsed StructuralData JSON for the matching app_id."""
+    pkg_dir = Path(__file__).parent
+    for path in pkg_dir.glob("*-StructuralData.json"):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data["appId"] == app_id:
+            return data
+    raise ValueError(f"App with id {app_id!r} not found")
+
+
 _TQL_GUIDE = _load_tql_guide()  # used below in `instructions=`; removed in Task 5
 
 mcp = FastMCP(
@@ -82,6 +92,24 @@ async def list_apps() -> str:
     {appId, appName} objects.
     """
     return json.dumps(_load_apps(), indent=2)
+
+
+@mcp.tool()
+async def get_app_structure(app_id: str) -> str:
+    """Return the StructuralData (events + parameters) for a given app.
+
+    Call this after `list_apps` to learn which events and parameters are
+    available for the app you want to query. The returned JSON has top-level
+    keys: `appId`, `appName`, `description`, `exportDate`, `events`,
+    `parameters`.
+
+    Args:
+        app_id: The TelemetryDeck app ID (from `list_apps`).
+    """
+    try:
+        return json.dumps(_load_app_structure(app_id), indent=2)
+    except ValueError as e:
+        return f"Error: {e}"
 
 
 @mcp.tool()
