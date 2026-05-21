@@ -3,7 +3,7 @@ import base64
 
 import httpx
 
-BASE_URL = "https://api.telemetrydeck.com"
+BASE_URL = "https://api.telemetrydeckapi.com"
 
 
 async def login(email: str, password: str) -> dict:
@@ -32,8 +32,52 @@ class TelemetryDeckClient:
             "Content-Type": "application/json",
         }
 
+    async def _resolve_data_source(self) -> str:
+        """Resolve the correct Druid dataSource for this org.
+
+        Orgs with `useNamespace=true` (the modern default) store signals in a
+        per-namespace dataSource named after `org.namespace`. Without setting
+        this explicitly, queries hit a near-empty default source and silently
+        return zero samples — so we always resolve and inject it.
+        """
+        async with httpx.AsyncClient(base_url=BASE_URL, headers=self.headers, timeout=15) as client:
+            resp = await client.get("/api/v3/organizations/")
+            if resp.status_code == 401:
+                raise RuntimeError("Authentication failed (401). Check your bearer token.")
+            resp.raise_for_status()
+            orgs = resp.json()
+        if not orgs:
+            return "telemetry-signals"
+        org = orgs[0]
+        settings = org.get("settings") or {}
+        if settings.get("useNamespace") and org.get("namespace"):
+            return org["namespace"]
+        return "telemetry-signals"
+
+    def _scope_query(self, query: dict, data_source: str) -> dict:
+        """Inject dataSource and an appID selector filter.
+
+        TelemetryDeck's top-level `appID` field does NOT scope queries against
+        namespaced dataSources — you must filter on the `appID` dimension. We
+        do this transparently so callers don't have to remember.
+        """
+        q = dict(query)
+        q.setdefault("dataSource", data_source)
+        app_filter = {"type": "selector", "dimension": "appID", "value": self.app_id}
+        existing = q.get("filter")
+        if existing is None:
+            q["filter"] = app_filter
+        elif isinstance(existing, dict) and existing.get("type") == "and":
+            q["filter"] = {"type": "and", "fields": list(existing.get("fields", [])) + [app_filter]}
+        else:
+            q["filter"] = {"type": "and", "fields": [existing, app_filter]}
+        q.pop("appID", None)
+        return q
+
     async def run_query(self, query: dict) -> dict:
         """Submit a TQL query via async endpoint, poll for results."""
+        data_source = await self._resolve_data_source()
+        query = self._scope_query(query, data_source)
         async with httpx.AsyncClient(base_url=BASE_URL, headers=self.headers, timeout=30) as client:
             # Submit query
             resp = await client.post("/api/v3/query/calculate-async/", json=query)

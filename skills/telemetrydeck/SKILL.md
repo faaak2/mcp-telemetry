@@ -105,6 +105,8 @@ The MCP server's own instructions describe the order: `get_tql_guide` → `list_
   - "this week" → Monday 00:00 UTC of the current week → now
   - "last 30 days" → 30 days ago → now
 - Default `granularity` to `day` for timeseries unless the user implies otherwise.
+- **Do NOT set `dataSource`, `appID`, or an `appID` filter** — `run_query` injects the correct namespaced `dataSource` for the org and adds an `appID` selector based on the `app_id` argument. The TQL guide may show these fields in examples; ignore them. Setting them yourself can produce silently-wrong results (an org-wide aggregate masquerading as a single-app number, or zero samples for events that clearly exist).
+- If you genuinely need to combine an `appID` filter with other filters (e.g. an event-type selector), just write the other filter — the MCP wraps it with the `appID` selector via an `and`.
 
 ### Execute and present
 

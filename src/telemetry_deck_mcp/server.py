@@ -45,7 +45,12 @@ mcp = FastMCP(
         "  2. Call `list_apps` to discover available apps and pick the right `app_id`.\n"
         "  3. Call `get_app_structure(app_id)` for the event/parameter list of that app.\n"
         "Then compose your TQL and call `run_query`. If `run_query` returns 401, "
-        "the bearer token is expired — re-authenticate."
+        "the bearer token is expired — re-authenticate.\n\n"
+        "Query scoping is handled automatically: do NOT set `dataSource`, "
+        "`appID`, or an `appID` filter in your query. `run_query` resolves the "
+        "correct namespaced dataSource for the org and adds an `appID` selector "
+        "filter for the `app_id` you pass. Setting these yourself can produce "
+        "silently-wrong results (e.g. zero samples for events that clearly exist)."
     ),
 )
 
