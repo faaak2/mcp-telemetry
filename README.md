@@ -150,7 +150,7 @@ Retrieve the TQL query object for a saved insight by its ID. Useful for inspecti
 
 ## Authentication
 
-Every tool call requires `bearer_token` and `app_id` as parameters. Get your bearer token from the [TelemetryDeck dashboard](https://dashboard.telemetrydeck.com) or via the login API.
+`run_query` and `get_insight_query` require `bearer_token` and `app_id`. The reference tools (`get_tql_guide`, `list_apps`, `get_app_structure`) take no authentication. Get your bearer token from the [TelemetryDeck dashboard](https://dashboard.telemetrydeck.com) or via the `login` tool.
 
 ## Testing
 
